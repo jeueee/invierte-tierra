@@ -41,7 +41,6 @@
 
     <script type="text/babel">
         // --- SISTEMA DE ICONOS INTERNO (SVG Nativo) ---
-        // Eliminamos la dependencia externa para evitar errores de carga y versión.
         
         const iconPaths = {
             Menu: <><line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="18" y2="18" /></>,
@@ -65,7 +64,8 @@
             User: <><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></>,
             Calendar: <><rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" /><line x1="3" x2="21" y1="10" y2="10" /></>,
             FileText: <><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /><line x1="16" x2="8" y1="13" y2="13" /><line x1="16" x2="8" y1="17" y2="17" /><line x1="10" x2="8" y1="9" y2="9" /></>,
-            Lock: <><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></>
+            Lock: <><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></>,
+            Banknote: <><rect width="20" height="12" x="2" y="6" rx="2" /><circle cx="12" cy="12" r="2" /><path d="M6 12h.01M18 12h.01" /></>
         };
 
         const createIcon = (name) => ({ size = 24, className = "", fill = "none", ...props }) => (
@@ -109,10 +109,10 @@
         const Calendar = createIcon('Calendar');
         const FileText = createIcon('FileText');
         const Lock = createIcon('Lock');
+        const Banknote = createIcon('Banknote'); // Nuevo ícono para transferencia
 
         // --- DATOS (MOCK DATA) ---
-        // AHORA USANDO RUTAS RELATIVAS: Asegúrate de que tus carpetas y archivos en GitHub
-        // CUMPLAN con esta estructura de nombres y capitalización (ej: ./images/kunkú/1.jpg)
+        // Rutas relativas corregidas.
         const developments = [
             {
                 id: 'kunkú',
@@ -212,6 +212,16 @@
         const formatMoney = (amount) => {
             return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 0 }).format(amount);
         };
+        
+        // Función para manejar errores de carga de imagen y mostrar un placeholder de diagnóstico
+        const handleImageError = (e, fallbackText) => {
+            const originalSrc = e.target.src.split('/').pop();
+            const placeholderText = `Buscando: ${e.target.src.split('i=')[1] || originalSrc}`;
+            e.target.onerror = null; // Evitar loop infinito
+            // Muestra un placeholder de diagnóstico
+            e.target.src = `https://placehold.co/800x600/ef4444/ffffff?text=${encodeURIComponent(fallbackText || placeholderText)}`;
+            e.target.className += ' border-4 border-red-500'; // Añadir un borde rojo para destacar el error
+        };
 
         // --- COMPONENTES UI ---
         const SectionTitle = ({ title, subtitle, light = false }) => (
@@ -232,7 +242,8 @@
                 secondary: "bg-yellow-600 text-white hover:bg-yellow-500 border border-yellow-600",
                 outline: "bg-transparent text-green-900 border-2 border-green-900 hover:bg-green-50",
                 white: "bg-white text-green-900 hover:bg-stone-100",
-                danger: "bg-red-600 text-white hover:bg-red-700"
+                danger: "bg-red-600 text-white hover:bg-red-700",
+                transfer: "bg-blue-600 text-white hover:bg-blue-700 border border-blue-600"
             };
             
             return (
@@ -240,6 +251,93 @@
                     {children}
                     {Icon && <Icon size={18} />}
                 </button>
+            );
+        };
+        
+        const PaymentMethodSelector = ({ selectedMethod, setSelectedMethod }) => {
+            const methods = [
+                { id: 'card', name: 'Tarjeta de Crédito / Débito', icon: CreditCard, variant: 'primary' },
+                { id: 'transfer', name: 'Transferencia SPEI', icon: Banknote, variant: 'transfer' },
+            ];
+
+            return (
+                <div className="space-y-4">
+                    {methods.map((method) => (
+                        <div 
+                            key={method.id}
+                            className={`p-4 rounded-xl cursor-pointer transition-all ${
+                                selectedMethod === method.id 
+                                    ? 'bg-green-50 border-2 border-green-600 shadow-md' 
+                                    : 'bg-white border border-stone-200 hover:bg-stone-50'
+                            }`}
+                            onClick={() => setSelectedMethod(method.id)}
+                        >
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <method.icon size={24} className={selectedMethod === method.id ? "text-green-700" : "text-stone-500"} />
+                                    <span className="font-semibold text-stone-800">{method.name}</span>
+                                </div>
+                                <div className={`w-4 h-4 rounded-full border-2 ${selectedMethod === method.id ? 'border-green-600 bg-green-600' : 'border-stone-400'}`}>
+                                    {selectedMethod === method.id && <div className="w-full h-full rounded-full bg-white scale-50"></div>}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            );
+        };
+
+        const TransferDetails = ({ amount }) => {
+            const data = [
+                { label: 'Beneficiario', value: 'Inversiones en Tierra, S.A. de C.V.', copy: true },
+                { label: 'Banco', value: 'BANAMEX', copy: false },
+                { label: 'CLABE Interbancaria', value: '002180053915152528', copy: true },
+                { label: 'Concepto', value: 'APARTADO LOTE [TU LOTE ID]', copy: false },
+                { label: 'Monto a Transferir', value: formatMoney(amount), copy: true, emphasis: true },
+            ];
+
+            const copyToClipboard = (text) => {
+                // Función para copiar texto, compatible con iframes
+                const el = document.createElement('textarea');
+                el.value = text;
+                document.body.appendChild(el);
+                el.select();
+                try {
+                    document.execCommand('copy');
+                    alert('¡CLABE copiada! Ahora puedes ir a tu app bancaria.'); // Usar una alerta simple solo para este caso de feedback de usuario
+                } catch (err) {
+                    console.error('No se pudo copiar el texto', err);
+                }
+                document.body.removeChild(el);
+            };
+
+            return (
+                <div className="bg-blue-50 p-6 rounded-xl border border-blue-200">
+                    <h4 className="text-xl font-bold text-blue-800 mb-4 flex items-center gap-2"><Banknote size={24} /> Datos para Transferencia SPEI</h4>
+                    <p className="text-sm text-stone-600 mb-6">Por favor, realiza la transferencia exacta a la siguiente cuenta. **Recuerda usar el Lote ID como concepto de pago.**</p>
+                    <div className="space-y-4">
+                        {data.map((item, i) => (
+                            <div key={i} className={`flex justify-between items-center p-3 rounded-lg ${item.emphasis ? 'bg-blue-200 font-bold text-lg' : 'bg-white border border-blue-100'}`}>
+                                <div className="flex flex-col">
+                                    <span className="text-xs text-stone-500">{item.label}</span>
+                                    <span className={`text-stone-800 ${item.emphasis ? 'text-blue-800' : ''}`}>{item.value}</span>
+                                </div>
+                                {item.copy && (
+                                    <button 
+                                        onClick={() => copyToClipboard(item.value)} 
+                                        className="text-blue-600 hover:text-blue-800 text-xs font-semibold px-2 py-1 rounded transition-colors bg-blue-100"
+                                    >
+                                        Copiar
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                    <div className="mt-6 p-4 bg-yellow-100 rounded-lg text-sm text-yellow-800">
+                        <p className="font-bold">IMPORTANTE:</p>
+                        <p>Una vez realizada la transferencia, envía el comprobante a <span className="font-semibold">pagos@inviertoentierra.com</span> para confirmar tu apartado.</p>
+                    </div>
+                </div>
             );
         };
 
@@ -251,6 +349,7 @@
             const [isMenuOpen, setIsMenuOpen] = React.useState(false);
             const [coupon, setCoupon] = React.useState('');
             const [discountApplied, setDiscountApplied] = React.useState(false);
+            const [paymentMethod, setPaymentMethod] = React.useState('card'); // card, transfer
 
             React.useEffect(() => {
                 window.scrollTo(0, 0);
@@ -372,8 +471,13 @@
                 <div className="animate-fadeIn">
                     <section className="relative h-[85vh] flex items-center">
                         <div className="absolute inset-0 bg-stone-900">
-                            {/* IMAGEN PRINCIPAL: RUTA RELATIVA. Reemplaza con tu imagen principal. */}
-                            <img src="./images/hero_principal.jpg" alt="Land Landscape" className="w-full h-full object-cover opacity-50" />
+                            {/* IMAGEN PRINCIPAL: RUTA RELATIVA. */}
+                            <img 
+                                src="./images/hero_principal.jpg" 
+                                alt="Land Landscape" 
+                                className="w-full h-full object-cover opacity-50" 
+                                onError={(e) => handleImageError(e, 'Error: hero_principal.jpg no encontrada')}
+                            />
                         </div>
                         <div className="container mx-auto px-4 relative z-10">
                             <div className="max-w-3xl">
@@ -420,8 +524,13 @@
                                 <Button variant="secondary" onClick={() => setView('education')}>Leer Artículo Completo</Button>
                             </div>
                             <div className="relative">
-                                {/* IMAGEN SECUNDARIA: RUTA RELATIVA. Reemplaza con tu imagen de gráfica o similar. */}
-                                <img src="./images/grafica_plusvalia.jpg" className="rounded-2xl shadow-2xl" alt="Gráfica de crecimiento" />
+                                {/* IMAGEN SECUNDARIA: RUTA RELATIVA. */}
+                                <img 
+                                    src="./images/grafica_plusvalia.jpg" 
+                                    className="rounded-2xl shadow-2xl" 
+                                    alt="Gráfica de crecimiento" 
+                                    onError={(e) => handleImageError(e, 'Error: grafica_plusvalia.jpg no encontrada')}
+                                />
                                 <div className="absolute -bottom-6 -left-6 bg-green-900 text-white p-6 rounded-xl shadow-lg max-w-xs">
                                     <p className="font-serif text-xl italic">"La tierra es la única inversión que no pueden imprimir más."</p>
                                 </div>
@@ -437,7 +546,12 @@
                                     <div className="relative h-64 overflow-hidden">
                                         <div className="absolute top-4 right-4 bg-white/90 backdrop-blur text-green-900 px-3 py-1 rounded-full text-xs font-bold z-10">{dev.type}</div>
                                         {/* Aquí se carga la imagen principal del desarrollo con RUTA RELATIVA */}
-                                        <img src={dev.image} alt={dev.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                        <img 
+                                            src={dev.image} 
+                                            alt={dev.name} 
+                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                                            onError={(e) => handleImageError(e, `Error: ${dev.name} principal no encontrada`)}
+                                        />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                                         <div className="absolute bottom-4 left-4 text-white">
                                             <h3 className="text-2xl font-bold">{dev.name}</h3>
@@ -494,7 +608,12 @@
                             <div key={dev.id} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-stone-100 flex flex-col md:flex-row hover:shadow-md transition-shadow">
                                 <div className="md:w-2/5 h-64 md:h-auto relative">
                                     {/* Aquí se carga la imagen principal del desarrollo con RUTA RELATIVA */}
-                                    <img src={dev.image} alt={dev.name} className="w-full h-full object-cover" />
+                                    <img 
+                                        src={dev.image} 
+                                        alt={dev.name} 
+                                        className="w-full h-full object-cover" 
+                                        onError={(e) => handleImageError(e, `Error: ${dev.name} principal no encontrada`)}
+                                    />
                                     <div className="absolute top-4 left-4 bg-green-900 text-white px-3 py-1 rounded text-xs font-bold">{dev.type}</div>
                                 </div>
                                 <div className="md:w-3/5 p-8 flex flex-col justify-center">
@@ -526,7 +645,12 @@
                     <div className="animate-fadeIn bg-white min-h-screen pb-20">
                         <div className="relative h-[60vh]">
                             {/* Imagen de fondo del header de detalles con RUTA RELATIVA */}
-                            <img src={selectedDev.image} className="w-full h-full object-cover" alt={selectedDev.name} />
+                            <img 
+                                src={selectedDev.image} 
+                                className="w-full h-full object-cover" 
+                                alt={selectedDev.name} 
+                                onError={(e) => handleImageError(e, `Error: ${selectedDev.name} principal no encontrada`)}
+                            />
                             <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                                 <div className="text-center text-white p-4">
                                     <h1 className="text-6xl font-serif font-bold mb-2">{selectedDev.name}</h1>
@@ -545,21 +669,17 @@
                                 {/* 2. GALERÍA DE IMÁGENES (Nueva Sección) */}
                                 <div>
                                     <h2 className="text-3xl font-bold text-green-900 mb-6 font-serif">Galería de Imágenes</h2>
-                                    <p className="text-stone-600 mb-6">Explora las fotos reales del desarrollo y sus avances. **Verifica que estas rutas relativas sean correctas en tu repositorio de GitHub.**</p>
+                                    <p className="text-stone-600 mb-6">Explora las fotos reales del desarrollo y sus avances. **Si ves un recuadro rojo, la imagen no se ha encontrado. Verifica la ruta: `./images/{selectedDev.id}/[nombre].jpg`**</p>
                                     <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                                         {selectedDev.gallery.map((imgUrl, i) => (
                                             <div key={i} className="group overflow-hidden rounded-xl shadow-md border-4 border-white hover:border-green-600 transition-all cursor-pointer">
-                                                {/* Aquí se cargan las imágenes de la galería con RUTA RELATIVA */}
+                                                {/* Aquí se cargan las imágenes de la galería con RUTA RELATIVA y FALLBACK */}
                                                 <img 
                                                     src={imgUrl} 
                                                     alt={`Galería de ${selectedDev.name} - Foto ${i + 1}`} 
                                                     className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
-                                                    // Manejo de error si la URL de la imagen no existe
-                                                    onError={(e) => {
-                                                        e.target.onerror = null; 
-                                                        // En caso de error, muestra un placeholder de alerta, no una imagen rota.
-                                                        e.target.src="https://placehold.co/800x600/ef4444/ffffff?text=FOTO+NO+ENCONTRADA"; 
-                                                    }}
+                                                    // Manejo de error mejorado para diagnóstico
+                                                    onError={(e) => handleImageError(e, `Buscando: ${imgUrl.split('images/')[1] || imgUrl}`)}
                                                 />
                                             </div>
                                         ))}
@@ -678,7 +798,7 @@
                                 <li className="flex gap-4 items-start">
                                     <span className="bg-yellow-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold flex-shrink-0">3</span>
                                     <p className="text-stone-600"><strong>Consolidación:</strong> Se construyen las primeras casas. Zona habitada. Seguridad total.</p>
-                                </li>
+                                </li >
                             </ul>
                             <div className="bg-stone-100 p-8 rounded-xl text-center">
                                 <h3 className="font-bold text-xl mb-4">¿Listo para empezar tu patrimonio?</h3>
@@ -735,7 +855,6 @@
 
                 const item = cart[0]; // Simplified single item checkout
                 const total = item.price;
-                const enganche = total * 0.10;
                 const apartado = 5000;
                 const finalPrice = discountApplied ? total * 0.95 : total;
                 
@@ -747,7 +866,11 @@
                                 <div className="md:col-span-2 space-y-6">
                                     {/* Item Card */}
                                     <div className="bg-white p-6 rounded-xl shadow-sm border border-stone-100 flex gap-6 items-start">
-                                        <img src={item.devImage} className="w-24 h-24 object-cover rounded-lg hidden sm:block" />
+                                        <img 
+                                            src={item.devImage} 
+                                            className="w-24 h-24 object-cover rounded-lg hidden sm:block" 
+                                            onError={(e) => handleImageError(e, `Error: ${item.devName} no encontrada`)}
+                                        />
                                         <div className="flex-1">
                                             <h3 className="font-bold text-lg text-green-900">{item.devName} - Lote {item.number}</h3>
                                             <p className="text-sm text-stone-500 mb-2">{item.devLocation}</p>
@@ -758,8 +881,35 @@
                                         </div>
                                         <button onClick={() => setCart([])} className="text-red-400 hover:text-red-600"><X size={20} /></button>
                                     </div>
+                                    
+                                    {/* 1. SELECCIÓN DE MÉTODO DE PAGO */}
+                                    <div className="bg-white p-8 rounded-xl shadow-sm border border-stone-100">
+                                        <h3 className="font-bold text-lg mb-6 flex items-center gap-2"><CreditCard size={20} /> Selecciona Método de Pago</h3>
+                                        <PaymentMethodSelector selectedMethod={paymentMethod} setSelectedMethod={setPaymentMethod} />
+                                    </div>
 
-                                    {/* Form */}
+                                    {/* 2. DETALLE DEL PAGO */}
+                                    <div className="bg-white p-8 rounded-xl shadow-sm border border-stone-100">
+                                        {paymentMethod === 'card' && (
+                                            <>
+                                                <h3 className="font-bold text-lg mb-6 flex items-center gap-2"><CreditCard size={20} /> Pago con Tarjeta</h3>
+                                                <div className="space-y-4">
+                                                    <input type="text" placeholder="Número de Tarjeta" className="p-3 border border-stone-200 rounded bg-stone-50 w-full focus:outline-none focus:border-green-900" />
+                                                    <div className="grid grid-cols-3 gap-4">
+                                                        <input type="text" placeholder="MM/AA" className="p-3 border border-stone-200 rounded bg-stone-50 w-full focus:outline-none focus:border-green-900" />
+                                                        <input type="text" placeholder="CVC" className="p-3 border border-stone-200 rounded bg-stone-50 w-full focus:outline-none focus:border-green-900" />
+                                                        <input type="text" placeholder="CP" className="p-3 border border-stone-200 rounded bg-stone-50 w-full focus:outline-none focus:border-green-900" />
+                                                    </div>
+                                                    <input type="text" placeholder="Nombre en la Tarjeta" className="p-3 border border-stone-200 rounded bg-stone-50 w-full focus:outline-none focus:border-green-900" />
+                                                </div>
+                                            </>
+                                        )}
+                                        {paymentMethod === 'transfer' && (
+                                            <TransferDetails amount={apartado} />
+                                        )}
+                                    </div>
+
+                                    {/* 3. DATOS DEL TITULAR */}
                                     <div className="bg-white p-8 rounded-xl shadow-sm border border-stone-100">
                                         <h3 className="font-bold text-lg mb-6 flex items-center gap-2"><User size={20} /> Datos del Titular</h3>
                                         <div className="grid md:grid-cols-2 gap-4 mb-4">
@@ -781,7 +931,7 @@
 
                                 {/* Summary Sidebar */}
                                 <div className="space-y-6">
-                                    <div className="bg-white p-6 rounded-xl shadow-lg border border-stone-100">
+                                    <div className="bg-white p-6 rounded-xl shadow-lg border border-stone-100 sticky top-24">
                                         <h3 className="font-bold text-stone-800 mb-4">Resumen Financiero</h3>
                                         <div className="space-y-3 text-sm border-b border-stone-100 pb-4 mb-4">
                                             <div className="flex justify-between"><span>Precio de Lista:</span> <span>{formatMoney(item.price)}</span></div>
@@ -816,9 +966,11 @@
                                             {discountApplied && <p className="text-xs text-green-600 mt-1">¡Código aplicado con éxito!</p>}
                                         </div>
 
-                                        <Button fullWidth className="mb-3">Proceder al Pago Seguro</Button>
+                                        <Button fullWidth className="mb-3">
+                                            {paymentMethod === 'card' ? 'Pagar Apartado con Tarjeta' : 'Confirmar Apartado (Transferencia)'}
+                                        </Button>
                                         <div className="flex justify-center gap-2 text-stone-400 mt-4">
-                                            <Lock size={14} /> <span className="text-xs">Pago encriptado SSL 256-bits</span>
+                                            <Lock size={14} /> <span className="text-xs">Pago seguro SSL / Certificado de Apartado</span>
                                         </div>
                                     </div>
                                 </div>
