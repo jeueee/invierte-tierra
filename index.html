@@ -111,8 +111,8 @@
         const Lock = createIcon('Lock');
 
         // --- DATOS (MOCK DATA) ---
-        // HE REEMPLAZADO LAS URLS DE UNSPLASH CON PLACEHOLDERS SIMULANDO EL DISEÑO
-        // PARA QUE PUEDAS REEMPLAZAR FÁCILMENTE CON TUS URLs REALES
+        // AHORA USANDO RUTAS RELATIVAS: Asegúrate de que tus carpetas y archivos en GitHub
+        // CUMPLAN con esta estructura de nombres y capitalización (ej: ./images/kunkú/1.jpg)
         const developments = [
             {
                 id: 'kunkú',
@@ -123,14 +123,14 @@
                 fullDescription: 'Kunkú es más que un terreno; es un estilo de vida. Ubicado en la prestigiosa Costa Esmeralda, este desarrollo cuenta con acceso directo a playas vírgenes, club de playa privado para residentes y un diseño urbanístico que respeta las dunas costeras. La plusvalía en esta zona ha superado el 18% anual en los últimos 3 años.',
                 priceStart: 450000,
                 type: 'Frente al Mar',
-                // URL principal que usarás en el Catálogo. Reemplaza con tu imagen de Kunkú.
-                image: 'https://placehold.co/1000x600/0A3623/ffffff?text=KUNKÚ+Frente+al+Mar',
-                // Galería de imágenes (URLs que usarás para la sección de Galería)
+                // RUTA RELATIVA: Asegúrate que la imagen exista en ./images/kunkú/principal.jpg
+                image: './images/kunkú/principal.jpg',
+                // GALERÍA RUTA RELATIVA: Asegúrate que las imágenes existan dentro de la carpeta kunkú
                 gallery: [
-                    'https://placehold.co/800x600/0A3623/ffffff?text=Kunkú+1+(Playa)',
-                    'https://placehold.co/800x600/0A3623/ffffff?text=Kunkú+2+(Club+de+Playa)',
-                    'https://placehold.co/800x600/0A3623/ffffff?text=Kunkú+3+(Urbanizacion)',
-                    'https://placehold.co/800x600/0A3623/ffffff?text=Kunkú+4+(Amenidad)',
+                    './images/kunkú/1.jpg',
+                    './images/kunkú/2.jpg',
+                    './images/kunkú/3.jpg',
+                    './images/kunkú/4.jpg',
                 ],
                 amenities: ['Club de Playa', 'Seguridad 24/7', 'Electricidad Subterránea', 'Parques Lineales', 'Restaurante', 'Spa'],
                 lots: [
@@ -147,13 +147,13 @@
                 fullDescription: 'Kiran se encuentra en el triángulo dorado de desarrollo inmobiliario de Mérida. Rodeado de nuevos hospitales, universidades y centros comerciales, es la opción perfecta para quienes buscan rendimientos a mediano plazo o construir una residencia familiar segura.',
                 priceStart: 190000,
                 type: 'Residencial',
-                // URL principal que usarás en el Catálogo. Reemplaza con tu imagen de Kiran.
-                image: 'https://placehold.co/1000x600/7F1D1D/ffffff?text=KIRAN+Residencial',
-                // Galería de imágenes (URLs que usarás para la sección de Galería)
+                // RUTA RELATIVA: Asegúrate que la imagen exista en ./images/kiran/principal.jpg
+                image: './images/kiran/principal.jpg',
+                // GALERÍA RUTA RELATIVA: Asegúrate que las imágenes existan dentro de la carpeta kiran
                 gallery: [
-                    'https://placehold.co/800x600/7F1D1D/ffffff?text=Kiran+1+(Vialidad)',
-                    'https://placehold.co/800x600/7F1D1D/ffffff?text=Kiran+2+(Casa+Club)',
-                    'https://placehold.co/800x600/7F1D1D/ffffff?text=Kiran+3+(Acceso)',
+                    './images/kiran/1.jpg',
+                    './images/kiran/2.jpg',
+                    './images/kiran/3.jpg',
                 ],
                 amenities: ['Pavimentación', 'Alumbrado Público', 'Cancha de Padel', 'Casa Club', 'Vigilancia'],
                 lots: [
@@ -170,13 +170,13 @@
                 fullDescription: 'Vidalta redefine el concepto de comunidad. Conkal se ha convertido en el suburbio residencial por excelencia de Mérida. Aquí disfrutarás de calles amplias, vegetación y una administración de condominio eficiente que garantiza que tu propiedad siempre luzca impecable.',
                 priceStart: 350000,
                 type: 'Premium',
-                // URL principal que usarás en el Catálogo. Reemplaza con tu imagen de Vidalta.
-                image: 'https://placehold.co/1000x600/1D4ED8/ffffff?text=VIDALTA+Premium',
-                // Galería de imágenes (URLs que usarás para la sección de Galería)
+                // RUTA RELATIVA: Asegúrate que la imagen exista en ./images/vidalta/principal.jpg
+                image: './images/vidalta/principal.jpg',
+                // GALERÍA RUTA RELATIVA: Asegúrate que las imágenes existan dentro de la carpeta vidalta
                 gallery: [
-                    'https://placehold.co/800x600/1D4ED8/ffffff?text=Vidalta+1+(Alberca)',
-                    'https://placehold.co/800x600/1D4ED8/ffffff?text=Vidalta+2+(Gimnasio)',
-                    'https://placehold.co/800x600/1D4ED8/ffffff?text=Vidalta+3+(Paisajismo)',
+                    './images/vidalta/1.jpg',
+                    './images/vidalta/2.jpg',
+                    './images/vidalta/3.jpg',
                 ],
                 amenities: ['Gimnasio', 'Alberca', 'Salón de Eventos', 'Pet Park', 'Ciclovía'],
                 lots: [
@@ -193,12 +193,12 @@
                 fullDescription: 'Imperio es un proyecto enfocado puramente en la inversión a mediano plazo (4-5 años). Su precio por metro cuadrado es el más bajo del mercado en la zona de mayor crecimiento del estado, asegurando una alta rentabilidad para el inversionista que no busca construir de inmediato.',
                 priceStart: 120000,
                 type: 'Inversión',
-                // URL principal que usarás en el Catálogo. Reemplaza con tu imagen de Imperio.
-                image: 'https://placehold.co/1000x600/94A3B8/ffffff?text=IMPERIO+Inversión',
-                // Galería de imágenes (URLs que usarás para la sección de Galería)
+                // RUTA RELATIVA: Asegúrate que la imagen exista en ./images/imperio/principal.jpg
+                image: './images/imperio/principal.jpg',
+                // GALERÍA RUTA RELATIVA: Asegúrate que las imágenes existan dentro de la carpeta imperio
                 gallery: [
-                    'https://placehold.co/800x600/94A3B8/ffffff?text=Imperio+1+(Entrada)',
-                    'https://placehold.co/800x600/94A3B8/ffffff?text=Imperio+2+(Area+Comun)',
+                    './images/imperio/1.jpg',
+                    './images/imperio/2.jpg',
                 ],
                 amenities: ['Calles Blancas', 'Mojoneras', 'Acceso Controlado', 'Energía a pie de lote'],
                 lots: [
@@ -372,8 +372,8 @@
                 <div className="animate-fadeIn">
                     <section className="relative h-[85vh] flex items-center">
                         <div className="absolute inset-0 bg-stone-900">
-                            {/* IMAGEN PRINCIPAL: REEMPLAZA CON LA URL DE UNA IMAGEN DE TUS TERRENOS */}
-                            <img src="https://images.unsplash.com/photo-1502082553048-f009c37129b9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80" alt="Land Landscape" className="w-full h-full object-cover opacity-50" />
+                            {/* IMAGEN PRINCIPAL: RUTA RELATIVA. Reemplaza con tu imagen principal. */}
+                            <img src="./images/hero_principal.jpg" alt="Land Landscape" className="w-full h-full object-cover opacity-50" />
                         </div>
                         <div className="container mx-auto px-4 relative z-10">
                             <div className="max-w-3xl">
@@ -420,7 +420,8 @@
                                 <Button variant="secondary" onClick={() => setView('education')}>Leer Artículo Completo</Button>
                             </div>
                             <div className="relative">
-                                <img src="https://images.unsplash.com/photo-1554469384-e58fac16e23a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" className="rounded-2xl shadow-2xl" alt="Building wealth" />
+                                {/* IMAGEN SECUNDARIA: RUTA RELATIVA. Reemplaza con tu imagen de gráfica o similar. */}
+                                <img src="./images/grafica_plusvalia.jpg" className="rounded-2xl shadow-2xl" alt="Gráfica de crecimiento" />
                                 <div className="absolute -bottom-6 -left-6 bg-green-900 text-white p-6 rounded-xl shadow-lg max-w-xs">
                                     <p className="font-serif text-xl italic">"La tierra es la única inversión que no pueden imprimir más."</p>
                                 </div>
@@ -435,7 +436,7 @@
                                 <div key={dev.id} className="group cursor-pointer bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all border border-stone-100" onClick={() => selectDevelopment(dev)}>
                                     <div className="relative h-64 overflow-hidden">
                                         <div className="absolute top-4 right-4 bg-white/90 backdrop-blur text-green-900 px-3 py-1 rounded-full text-xs font-bold z-10">{dev.type}</div>
-                                        {/* Aquí se carga la imagen principal del desarrollo */}
+                                        {/* Aquí se carga la imagen principal del desarrollo con RUTA RELATIVA */}
                                         <img src={dev.image} alt={dev.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                                         <div className="absolute bottom-4 left-4 text-white">
@@ -492,7 +493,7 @@
                         {developments.map((dev) => (
                             <div key={dev.id} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-stone-100 flex flex-col md:flex-row hover:shadow-md transition-shadow">
                                 <div className="md:w-2/5 h-64 md:h-auto relative">
-                                    {/* Aquí se carga la imagen principal del desarrollo */}
+                                    {/* Aquí se carga la imagen principal del desarrollo con RUTA RELATIVA */}
                                     <img src={dev.image} alt={dev.name} className="w-full h-full object-cover" />
                                     <div className="absolute top-4 left-4 bg-green-900 text-white px-3 py-1 rounded text-xs font-bold">{dev.type}</div>
                                 </div>
@@ -524,7 +525,7 @@
                 return (
                     <div className="animate-fadeIn bg-white min-h-screen pb-20">
                         <div className="relative h-[60vh]">
-                            {/* Imagen de fondo del header de detalles */}
+                            {/* Imagen de fondo del header de detalles con RUTA RELATIVA */}
                             <img src={selectedDev.image} className="w-full h-full object-cover" alt={selectedDev.name} />
                             <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                                 <div className="text-center text-white p-4">
@@ -544,11 +545,11 @@
                                 {/* 2. GALERÍA DE IMÁGENES (Nueva Sección) */}
                                 <div>
                                     <h2 className="text-3xl font-bold text-green-900 mb-6 font-serif">Galería de Imágenes</h2>
-                                    <p className="text-stone-600 mb-6">Explora las fotos reales del desarrollo y sus avances. **Reemplaza estas URLs en el código con las de tus fotos subidas al servidor.**</p>
+                                    <p className="text-stone-600 mb-6">Explora las fotos reales del desarrollo y sus avances. **Verifica que estas rutas relativas sean correctas en tu repositorio de GitHub.**</p>
                                     <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                                         {selectedDev.gallery.map((imgUrl, i) => (
                                             <div key={i} className="group overflow-hidden rounded-xl shadow-md border-4 border-white hover:border-green-600 transition-all cursor-pointer">
-                                                {/* Aquí se cargan las imágenes de la galería */}
+                                                {/* Aquí se cargan las imágenes de la galería con RUTA RELATIVA */}
                                                 <img 
                                                     src={imgUrl} 
                                                     alt={`Galería de ${selectedDev.name} - Foto ${i + 1}`} 
@@ -556,7 +557,8 @@
                                                     // Manejo de error si la URL de la imagen no existe
                                                     onError={(e) => {
                                                         e.target.onerror = null; 
-                                                        e.target.src="https://placehold.co/800x600/ef4444/ffffff?text=FOTO+NO+CARGADA"; 
+                                                        // En caso de error, muestra un placeholder de alerta, no una imagen rota.
+                                                        e.target.src="https://placehold.co/800x600/ef4444/ffffff?text=FOTO+NO+ENCONTRADA"; 
                                                     }}
                                                 />
                                             </div>
